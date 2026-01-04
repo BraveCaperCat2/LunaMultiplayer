@@ -20,7 +20,7 @@ namespace LmpClient.Systems.VesselPositionSys
                 return;
 
             // Check if the Body Index is valid (may not be if another client has different mods installed)
-            if (msg.Data.BodyIndex >= FlightGlobals.Bodies.Count)
+            if (msgData.BodyIndex >= FlightGlobals.Bodies.Count)
                 return;
 
             if (!VesselPositionSystem.CurrentVesselUpdate.ContainsKey(vesselId))
