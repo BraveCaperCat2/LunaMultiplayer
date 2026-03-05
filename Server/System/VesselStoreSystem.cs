@@ -29,7 +29,7 @@ namespace Server.System
         {
             CurrentVessels.TryRemove(vesselId, out _);
 
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
                 lock (BackupLock)
                 {

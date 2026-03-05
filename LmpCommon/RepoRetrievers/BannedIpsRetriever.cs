@@ -27,7 +27,7 @@ namespace LmpCommon.RepoRetrievers
                 }
                 else if (LunaComputerTime.UtcNow - _lastRequestTime > MaxRequestInterval)
                 {
-                    Task.Run(() => RefreshBannedIps());
+                    _ = Task.Run(() => RefreshBannedIps());
                     _lastRequestTime = LunaComputerTime.UtcNow;
                 }
 

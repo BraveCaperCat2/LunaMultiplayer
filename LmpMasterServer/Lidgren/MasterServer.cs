@@ -34,7 +34,7 @@ namespace LmpMasterServer.Lidgren
             new TimeoutConcurrentDictionary<IPAddress, object>(1000);
         private static MasterServerMessageFactory MasterServerMessageFactory { get; } = new MasterServerMessageFactory();
 
-        public static async void Start()
+        public static async Task StartAsync()
         {
             var config = new NetPeerConfiguration("masterserver")
             {

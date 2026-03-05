@@ -20,10 +20,10 @@ namespace LmpMasterServer.Http.Handlers
 
         public async Task Handle(IHttpContext context, Func<Task> next)
         {
-            context.Response = new HttpResponse(HttpResponseCode.Ok, await GetServerList(), headerList, false);
+            context.Response = new HttpResponse(HttpResponseCode.Ok, await GetServerListAsync(), headerList, false);
         }
 
-        private static Task<string> GetServerList()
+        private static Task<string> GetServerListAsync()
         {
             return Task.Run(() =>
             {

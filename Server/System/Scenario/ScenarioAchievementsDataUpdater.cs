@@ -1,4 +1,4 @@
-﻿using LmpCommon.Message.Data.ShareProgress;
+using LmpCommon.Message.Data.ShareProgress;
 using LunaConfigNode.CfgNode;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ namespace Server.System.Scenario
         /// </summary>
         public static void WriteAchievementDataToFile(ShareProgressAchievementsMsgData achievementMsg)
         {
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
                 lock (Semaphore.GetOrAdd("ProgressTracking", new object()))
                 {

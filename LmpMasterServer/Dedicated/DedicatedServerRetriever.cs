@@ -27,7 +27,7 @@ namespace LmpMasterServer.Dedicated
         /// <summary>
         /// Download the dedicated server list from the <see cref="RepoConstants.DedicatedServersListUrl"/> and return the ones that are correctly written
         /// </summary>
-        public static async Task RefreshDedicatedServersList()
+        public static async Task RefreshDedicatedServersListAsync()
         {
             while (MasterServer.RunServer)
             {

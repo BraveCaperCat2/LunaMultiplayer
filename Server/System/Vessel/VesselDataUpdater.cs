@@ -28,7 +28,7 @@ namespace Server.System.Vessel
         /// </summary>
         public static void RawConfigNodeInsertOrUpdate(Guid vesselId, string vesselDataInConfigNodeFormat)
         {
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
                 var vessel = new Classes.Vessel(vesselDataInConfigNodeFormat);
                 if (GeneralSettings.SettingsStore.ModControl)

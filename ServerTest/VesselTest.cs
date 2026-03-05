@@ -8,7 +8,7 @@ namespace ServerTest
     [TestClass]
     public class VesselTest
     {
-        private static readonly string XmlExamplePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "XmlExampleFiles", "Others");
+        private static readonly string XmlExamplePath = Path.Combine(Directory.GetCurrentDirectory(), "XmlExampleFiles", "Others");
 
         [TestMethod]
         public void TestCreateVessel()

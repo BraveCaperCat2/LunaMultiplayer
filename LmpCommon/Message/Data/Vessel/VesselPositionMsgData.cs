@@ -1,4 +1,5 @@
 ﻿using Lidgren.Network;
+using LmpCommon.Message.Base;
 using LmpCommon.Message.Types;
 
 namespace LmpCommon.Message.Data.Vessel
@@ -10,6 +11,7 @@ namespace LmpCommon.Message.Data.Vessel
         public override VesselMessageType VesselMessageType => VesselMessageType.Position;
 
         //Avoid using reference types in this message as it can generate allocations and is sent VERY often.
+        public string BodyName;
         public int BodyIndex;
         public int SubspaceId;
         public float PingSec;
@@ -51,6 +53,8 @@ namespace LmpCommon.Message.Data.Vessel
 
             for (var i = 0; i < 8; i++)
                 lidgrenMsg.Write(Orbit[i]);
+
+            lidgrenMsg.Write(BodyName);
         }
 
         internal override void InternalDeserialize(NetIncomingMessage lidgrenMsg)
@@ -79,11 +83,14 @@ namespace LmpCommon.Message.Data.Vessel
 
             for (var i = 0; i < 8; i++)
                 Orbit[i] = lidgrenMsg.ReadDouble();
+
+            if (lidgrenMsg.Position < lidgrenMsg.LengthBits)
+                BodyName = lidgrenMsg.ReadString();
         }
 
         internal override int InternalGetMessageSize()
         {
-            return base.InternalGetMessageSize() + sizeof(int) * 2 + sizeof(float) * 2 + sizeof(bool) * 3 + sizeof(double) * 3 * 3 +
+            return base.InternalGetMessageSize() + BodyName.GetByteCount() + sizeof(int) * 2 + sizeof(float) * 2 + sizeof(bool) * 3 + sizeof(double) * 3 * 3 +
                 sizeof(float) * 4 * 1 + sizeof(double) * 8;
         }
     }

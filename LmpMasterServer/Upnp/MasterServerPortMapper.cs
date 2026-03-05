@@ -13,19 +13,19 @@ namespace LmpMasterServer.Upnp
         public static bool UseUpnp { get; set; } = true;
 
         private static readonly int LifetimeInSeconds = (int)TimeSpan.FromMinutes(1).TotalSeconds;
-        private static readonly AsyncLazy<NatDevice> Device = new AsyncLazy<NatDevice>(DiscoverDevice);
+        private static readonly AsyncLazy<NatDevice> Device = new AsyncLazy<NatDevice>(DiscoverDeviceAsync, new JoinableTaskContext().Factory);
 
         private static Mapping MasterServerPortMapping => new Mapping(Protocol.Udp, Lidgren.MasterServer.Port, Lidgren.MasterServer.Port, LifetimeInSeconds, $"LMPMasterSrv {Lidgren.MasterServer.Port}");
         private static Mapping MasterServerWebPortMapping => new Mapping(Protocol.Tcp, LunaHttpServer.Port, LunaHttpServer.Port, LifetimeInSeconds, $"LMPMasterSrvWeb {LunaHttpServer.Port}");
 
-        private static async Task<NatDevice> DiscoverDevice()
+        private static async Task<NatDevice> DiscoverDeviceAsync()
         {
             var nat = new NatDiscoverer();
             return await nat.DiscoverDeviceAsync(PortMapper.Upnp, new CancellationTokenSource(5000));
         }
 
         [DebuggerHidden]
-        public static async Task OpenPort()
+        public static async Task OpenPortAsync()
         {
             if (UseUpnp)
             {
@@ -43,7 +43,7 @@ namespace LmpMasterServer.Upnp
         }
 
         [DebuggerHidden]
-        public static async Task RemoveOpenedPorts()
+        public static async Task RemoveOpenedPortsAsync()
         {
             if (UseUpnp)
             {
@@ -63,13 +63,13 @@ namespace LmpMasterServer.Upnp
         /// <summary>
         /// Refresh the UPnP port every 30 seconds
         /// </summary>
-        public static async void RefreshUpnpPort()
+        public static async Task RefreshUpnpPortAsync()
         {
             if (UseUpnp)
             {
                 while (Lidgren.MasterServer.RunServer)
                 {
-                    await OpenPort();
+                    await OpenPortAsync();
                     await Task.Delay(TimeSpan.FromSeconds(30));
                 }
             }

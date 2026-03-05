@@ -1,4 +1,4 @@
-﻿using LunaConfigNode.CfgNode;
+using LunaConfigNode.CfgNode;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
@@ -20,7 +20,7 @@ namespace Server.System.Scenario
         /// </summary>
         public static void RawConfigNodeInsertOrUpdate(string scenarioModule, string scenarioAsConfigNode)
         {
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
                 var scenario = new ConfigNode(scenarioAsConfigNode);
                 lock (Semaphore.GetOrAdd(scenarioModule, new object()))

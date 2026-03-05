@@ -1,5 +1,6 @@
 ﻿using LunaConfigNode;
 using LunaConfigNode.CfgNode;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -39,6 +40,22 @@ namespace Server.System.Vessel.Classes
         public Part GetPart(uint partFlightId)
         {
             return Parts.GetSingle(partFlightId).Value;
+        }
+
+        public string GetOrbitingBodyName()
+        {
+            var body = Orbit.GetSingle("body")?.Value;
+            if (!string.IsNullOrEmpty(body)) return body;
+
+            var ident = Orbit.GetSingle("IDENT")?.Value;
+            if (!string.IsNullOrEmpty(ident))
+            {
+                // IDENT format is usually "Squad/Sun" or "OPM/Sarnus"
+                var parts = ident.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 0) return parts.Last();
+            }
+
+            return "Unknown";
         }
 
         public override string ToString()

@@ -15,7 +15,7 @@ namespace Server.Upnp
     public static class LmpPortMapper
     {
         private static readonly int LifetimeInSeconds = (int)TimeSpan.FromMinutes(5).TotalSeconds;
-        private static readonly AsyncLazy<NatDevice> Device = new AsyncLazy<NatDevice>(DiscoverDevice);
+        private static readonly AsyncLazy<NatDevice> Device = new AsyncLazy<NatDevice>(DiscoverDeviceAsync, new JoinableTaskContext().Factory);
 
         private static Mapping LmpPortMapping => new Mapping(Protocol.Udp, ConnectionSettings.SettingsStore.Port, ConnectionSettings.SettingsStore.Port,
             LifetimeInSeconds, $"LMPServer {ConnectionSettings.SettingsStore.Port}");
@@ -23,7 +23,7 @@ namespace Server.Upnp
         private static Mapping LmpWebPortMapping => new Mapping(Protocol.Tcp, WebsiteSettings.SettingsStore.Port, WebsiteSettings.SettingsStore.Port,
             LifetimeInSeconds, $"LMPServerWeb {WebsiteSettings.SettingsStore.Port}");
 
-        private static async Task<NatDevice> DiscoverDevice()
+        private static async Task<NatDevice> DiscoverDeviceAsync()
         {
             var nat = new NatDiscoverer();
             return await nat.DiscoverDeviceAsync(PortMapper.Upnp, new CancellationTokenSource(ConnectionSettings.SettingsStore.UpnpMsTimeout));
@@ -31,15 +31,15 @@ namespace Server.Upnp
 
         static LmpPortMapper() => ExitEvent.ServerClosing += () =>
         {
-            CloseLmpPort().Wait();
-            CloseWebPort().Wait();
+            CloseLmpPortAsync().Wait();
+            CloseWebPortAsync().Wait();
         };
 
         /// <summary>
         /// Opens the port set in the settings using UPnP. With a lifetime of <see cref="LifetimeInSeconds"/> seconds
         /// </summary>
         [DebuggerHidden]
-        public static async Task OpenLmpPort(bool verbose = true)
+        public static async Task OpenLmpPortAsync(bool verbose = true)
         {
             if (ConnectionSettings.SettingsStore.Upnp)
             {
@@ -60,7 +60,7 @@ namespace Server.Upnp
         /// Opens the website port set in the settings using UPnP. With a lifetime of <see cref="LifetimeInSeconds"/> seconds
         /// </summary>
         [DebuggerHidden]
-        public static async Task OpenWebPort(bool verbose = true)
+        public static async Task OpenWebPortAsync(bool verbose = true)
         {
             if (ConnectionSettings.SettingsStore.Upnp && WebsiteSettings.SettingsStore.EnableWebsite)
             {
@@ -80,14 +80,14 @@ namespace Server.Upnp
         /// <summary>
         /// Refresh the UPnP port every 1 minute
         /// </summary>
-        public static async void RefreshUpnpPort()
+        public static async Task RefreshUpnpPortAsync()
         {
             if (ConnectionSettings.SettingsStore.Upnp)
             {
                 while (ServerContext.ServerRunning)
                 {
-                    await OpenLmpPort(false);
-                    await OpenWebPort(false);
+                    await OpenLmpPortAsync(false);
+                    await OpenWebPortAsync(false);
                     await Task.Delay((int)TimeSpan.FromSeconds(60).TotalMilliseconds);
                 }
             }
@@ -97,7 +97,7 @@ namespace Server.Upnp
         /// Closes the opened port using UPnP
         /// </summary>
         [DebuggerHidden]
-        public static async Task CloseLmpPort()
+        public static async Task CloseLmpPortAsync()
         {
             if (ConnectionSettings.SettingsStore.Upnp && ServerContext.ServerRunning)
             {
@@ -118,7 +118,7 @@ namespace Server.Upnp
         /// Closes the opened web port using UPnP
         /// </summary>
         [DebuggerHidden]
-        public static async Task CloseWebPort()
+        public static async Task CloseWebPortAsync()
         {
             if (ConnectionSettings.SettingsStore.Upnp && WebsiteSettings.SettingsStore.EnableWebsite && ServerContext.ServerRunning)
             {
@@ -138,7 +138,7 @@ namespace Server.Upnp
         /// <summary>
         /// Gets external IP using UPnP
         /// </summary>
-        public static async Task<IPAddress> GetExternalIp()
+        public static async Task<IPAddress> GetExternalIpAsync()
         {
             var device = await Device.GetValueAsync();
             return await device.GetExternalIPAsync();

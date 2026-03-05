@@ -7,7 +7,7 @@ namespace LmpClient.Utilities
 {
     internal class CompatibilityChecker
     {
-        private static readonly Version KspVersion = new Version(Versioning.version_major, Versioning.version_minor, Versioning.Revision);
+        public static readonly Version KspVersion = new Version(Versioning.version_major, Versioning.version_minor, Versioning.Revision);
 
         public static bool IsCompatible()
         {

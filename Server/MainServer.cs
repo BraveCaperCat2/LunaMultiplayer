@@ -40,7 +40,7 @@ namespace Server
 
         private static bool IsRestart = false;
 
-        public static void Main()
+        public static async Task Main()
         {
             try
             {
@@ -58,11 +58,11 @@ namespace Server
                 LunaLog.Info("Documentation available at https://github.com/LunaMultiplayer/LunaMultiplayer/wiki");
 
                 if (Common.PlatformIsWindows())
-                    ExitSignal.Exit += (sender, args) => Exit();
+                    ExitSignal.Exit += (sender, args) => _ = ExitAsync();
                 else
                 {
                     //Register the ctrl+c event and exit signal if we are on linux
-                    Console.CancelKeyPress += (sender, args) => Exit();
+                    Console.CancelKeyPress += (sender, args) => _ = ExitAsync();
                 }
 
                 //We disable quick edit as otherwise when you select some text for copy/paste then you can't write to the console and server freezes
@@ -96,29 +96,29 @@ namespace Server
                 LunaLog.Normal($"Starting '{GeneralSettings.SettingsStore.ServerName}' on Address {ConnectionSettings.SettingsStore.ListenAddress} Port {ConnectionSettings.SettingsStore.Port}... ");
 
                 LidgrenServer.SetupLidgrenServer();
-                LmpPortMapper.OpenLmpPort().Wait();
-                LmpPortMapper.OpenWebPort().Wait();
+                await LmpPortMapper.OpenLmpPortAsync();
+                await LmpPortMapper.OpenWebPortAsync();
                 ServerContext.ServerRunning = true;
                 WebServer.StartWebServer();
 
                 //Do not add the command handler thread to the TaskContainer as it's a blocking task
-                LongRunTaskFactory.StartNew(CommandHandler.ThreadMain, CancellationTokenSrc.Token);
+                _ = LongRunTaskFactory.StartNew(CommandHandler.ThreadMainAsync, CancellationTokenSrc.Token);
 
-                TaskContainer.Add(LongRunTaskFactory.StartNew(WebServer.RefreshWebServerInformation, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(WebServer.RefreshWebServerInformationAsync, CancellationTokenSrc.Token));
 
-                TaskContainer.Add(LongRunTaskFactory.StartNew(LmpPortMapper.RefreshUpnpPort, CancellationTokenSrc.Token));
-                TaskContainer.Add(LongRunTaskFactory.StartNew(LogThread.RunLogThread, CancellationTokenSrc.Token));
-                TaskContainer.Add(LongRunTaskFactory.StartNew(ClientMainThread.ThreadMain, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(LmpPortMapper.RefreshUpnpPortAsync, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(LogThread.RunLogThreadAsync, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(ClientMainThread.ThreadMainAsync, CancellationTokenSrc.Token));
 
-                TaskContainer.Add(LongRunTaskFactory.StartNew(() => BackupSystem.PerformBackups(CancellationTokenSrc.Token), CancellationTokenSrc.Token));
-                TaskContainer.Add(LongRunTaskFactory.StartNew(LidgrenServer.StartReceivingMessages, CancellationTokenSrc.Token));
-                TaskContainer.Add(LongRunTaskFactory.StartNew(LidgrenMasterServer.RegisterWithMasterServer, CancellationTokenSrc.Token));
-                TaskContainer.Add(LongRunTaskFactory.StartNew(LidgrenMasterServer.CheckNATType, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(() => BackupSystem.PerformBackupsAsync(CancellationTokenSrc.Token), CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(LidgrenServer.StartReceivingMessagesAsync, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(LidgrenMasterServer.RegisterWithMasterServerAsync, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(LidgrenMasterServer.CheckNATTypeAsync, CancellationTokenSrc.Token));
 
-                TaskContainer.Add(LongRunTaskFactory.StartNew(VersionChecker.RefreshLatestVersion, CancellationTokenSrc.Token));
-                TaskContainer.Add(LongRunTaskFactory.StartNew(VersionChecker.DisplayNewVersionMsg, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(VersionChecker.RefreshLatestVersionAsync, CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(VersionChecker.DisplayNewVersionMsgAsync, CancellationTokenSrc.Token));
 
-                TaskContainer.Add(LongRunTaskFactory.StartNew(() => GcSystem.PerformGarbageCollection(CancellationTokenSrc.Token), CancellationTokenSrc.Token));
+                TaskContainer.Add(LongRunTaskFactory.StartNew(() => GcSystem.PerformGarbageCollectionAsync(CancellationTokenSrc.Token), CancellationTokenSrc.Token));
 
                 while (ServerContext.ServerStarting)
                     Thread.Sleep(500);
@@ -178,13 +178,13 @@ namespace Server
         /// <summary>
         /// Runs the exit logic
         /// </summary>
-        private static void Exit()
+        private static async Task ExitAsync()
         {
             LunaLog.Normal("Exiting... Please wait until all threads are finished");
             ExitEvent.Exit();
 
             CancellationTokenSrc.Cancel();
-            Task.WaitAll(TaskContainer.ToArray());
+            await Task.WhenAll(TaskContainer);
 
             ServerContext.Shutdown("Server is shutting down");
 
@@ -194,16 +194,15 @@ namespace Server
         /// <summary>
         /// Runs the restart logic
         /// </summary>
-        public static void Restart()
+        public static async Task RestartAsync()
         {
             //Perform Backups
-            BackupSystem.PerformBackups(CancellationTokenSrc.Token);
+            await BackupSystem.PerformBackupsAsync(CancellationTokenSrc.Token);
             LunaLog.Normal("Restarting...  Please wait until all threads are finished");
 
             ServerContext.Shutdown("Server is restarting");
             CancellationTokenSrc.Cancel();
-
-            Task.WaitAll(TaskContainer.ToArray());
+            await Task.WhenAll(TaskContainer);
 
             IsRestart = true;
 

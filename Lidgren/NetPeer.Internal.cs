@@ -642,6 +642,10 @@ namespace Lidgren.Network
 			//
 			switch (tp)
 			{
+				case NetMessageType.Ping:
+				case NetMessageType.Pong:
+					// silently ignore
+					return;
 				case NetMessageType.Discovery:
 					HandleIncomingDiscoveryRequest(now, senderEndPoint, ptr, payloadByteLength);
 					return;

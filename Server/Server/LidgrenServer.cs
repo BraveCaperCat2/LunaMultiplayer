@@ -92,7 +92,7 @@ namespace Server.Server
             ServerContext.ServerStarting = false;
         }
 
-        public static async void StartReceivingMessages()
+        public static async Task StartReceivingMessagesAsync()
         {
             try
             {
@@ -149,7 +149,7 @@ namespace Server.Server
                                 break;
                             case NetIncomingMessageType.UnconnectedData:
                                 // Only process message if we are still waiting for STUN responses
-                                if (LidgrenMasterServer.ReceiveSTUNResponses.Wait(0))
+                                if (await LidgrenMasterServer.ReceiveSTUNResponses.WaitAsync(0))
                                 {
                                     var message = ServerContext.MasterServerMessageFactory.Deserialize(msg, LunaNetworkTime.UtcNow.Ticks);
                                     if (message.Data is MsSTUNSuccessResponseMsgData data)

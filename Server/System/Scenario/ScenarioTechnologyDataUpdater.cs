@@ -1,4 +1,4 @@
-﻿using LmpCommon.Message.Data.ShareProgress;
+using LmpCommon.Message.Data.ShareProgress;
 using LunaConfigNode.CfgNode;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,7 @@ namespace Server.System.Scenario
         /// </summary>
         public static void WriteTechnologyDataToFile(ShareProgressTechnologyMsgData techMsg)
         {
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
                 lock (Semaphore.GetOrAdd("ResearchAndDevelopment", new object()))
                 {

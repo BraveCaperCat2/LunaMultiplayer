@@ -37,6 +37,7 @@ namespace LmpClient.Systems.VesselPositionSys
         #region Message Fields
 
         public Guid VesselId { get; set; }
+        public string BodyName { get; set; }
         public int BodyIndex { get; set; }
         public bool Landed { get; set; }
         public bool Splashed { get; set; }
@@ -90,6 +91,7 @@ namespace LmpClient.Systems.VesselPositionSys
         public VesselPositionUpdate(VesselPositionMsgData msgData)
         {
             VesselId = msgData.VesselId;
+            BodyName = msgData.BodyName;
             BodyIndex = msgData.BodyIndex;
             SubspaceId = msgData.SubspaceId;
             PingSec = msgData.PingSec;
@@ -109,6 +111,7 @@ namespace LmpClient.Systems.VesselPositionSys
         public void CopyFrom(VesselPositionUpdate update)
         {
             VesselId = update.VesselId;
+            BodyName = update.BodyName;
             BodyIndex = update.BodyIndex;
             SubspaceId = update.SubspaceId;
             PingSec = update.PingSec;

@@ -36,7 +36,7 @@ namespace Server.System.Vessel
             {
                 LastUpdateDictionary.AddOrUpdate(msgData.VesselId, DateTime.Now, (key, existingVal) => DateTime.Now);
 
-                Task.Run(() =>
+                _ = Task.Run(() =>
                 {
                     lock (Semaphore.GetOrAdd(msgData.VesselId, new object()))
                     {

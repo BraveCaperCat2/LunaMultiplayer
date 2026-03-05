@@ -19,6 +19,7 @@ namespace Server.Client
         public IPEndPoint Endpoint => Connection.RemoteEndPoint;
 
         public string UniqueIdentifier { get; set; }
+        public string KspVersion { get; set; }
 
         public bool Authenticated { get; set; }
 
@@ -42,7 +43,7 @@ namespace Server.Client
         public ClientStructure(NetConnection playerConnection)
         {
             Connection = playerConnection;
-            SendThread = MainServer.LongRunTaskFactory.StartNew(() => SendMessagesThread(MainServer.CancellationTokenSrc.Token), MainServer.CancellationTokenSrc.Token);
+            SendThread = MainServer.LongRunTaskFactory.StartNew(() => SendMessagesThreadAsync(MainServer.CancellationTokenSrc.Token), MainServer.CancellationTokenSrc.Token);
         }
 
         public override bool Equals(object obj)
@@ -56,7 +57,7 @@ namespace Server.Client
             return Endpoint?.GetHashCode() ?? 0;
         }
 
-        private async void SendMessagesThread(CancellationToken token)
+        private async Task SendMessagesThreadAsync(CancellationToken token)
         {
             while (ConnectionStatus == ConnectionStatus.Connected)
             {

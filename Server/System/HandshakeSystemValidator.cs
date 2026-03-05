@@ -9,20 +9,41 @@ namespace Server.System
 {
     public partial class HandshakeSystem
     {
-        private bool CheckUsernameLength(ClientStructure client, string username)
+        public static bool PlayerNameIsValid(string playerName, out string reason)
         {
-            if (username.Length > GeneralSettings.SettingsStore.MaxUsernameLength)
+            reason = string.Empty;
+            if (string.IsNullOrEmpty(playerName))
             {
-                Reason = $"Username too long. Max chars: {GeneralSettings.SettingsStore.MaxUsernameLength}";
-                HandshakeSystemSender.SendHandshakeReply(client, HandshakeReply.InvalidPlayername, Reason);
+                reason = "Username too short. Min chars: 1";
                 return false;
             }
 
-            if (username.Length <= 0)
+            if (playerName.Length > GeneralSettings.SettingsStore.MaxUsernameLength)
             {
-                Reason = "Username too short. Min chars: 1";
-                HandshakeSystemSender.SendHandshakeReply(client, HandshakeReply.InvalidPlayername, Reason);
+                reason = $"Username too long. Max chars: {GeneralSettings.SettingsStore.MaxUsernameLength}";
                 return false;
+            }
+
+            var regex = new Regex(@"^[-_a-zA-Z0-9]+$"); // Regex to only allow alphanumeric, dashes and underscore
+            if (!regex.IsMatch(playerName))
+            {
+                reason = "Invalid username characters (only A-Z, a-z, numbers, - and _)";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool CheckUsernameLength(ClientStructure client, string username)
+        {
+            if (!PlayerNameIsValid(username, out var reason))
+            {
+                if (reason.Contains("long") || reason.Contains("short"))
+                {
+                    Reason = reason;
+                    HandshakeSystemSender.SendHandshakeReply(client, HandshakeReply.InvalidPlayername, Reason);
+                    return false;
+                }
             }
 
             return true;
@@ -75,12 +96,14 @@ namespace Server.System
 
         private bool CheckUsernameCharacters(ClientStructure client, string playerName)
         {
-            var regex = new Regex(@"^[-_a-zA-Z0-9]+$"); // Regex to only allow alphanumeric, dashes and underscore
-            if (!regex.IsMatch(playerName))
+            if (!PlayerNameIsValid(playerName, out var reason))
             {
-                Reason = "Invalid username characters (only A-Z, a-z, numbers, - and _)";
-                HandshakeSystemSender.SendHandshakeReply(client, HandshakeReply.InvalidPlayername, Reason);
-                return false;
+                if (reason.Contains("characters"))
+                {
+                    Reason = reason;
+                    HandshakeSystemSender.SendHandshakeReply(client, HandshakeReply.InvalidPlayername, Reason);
+                    return false;
+                }
             }
             return true;
         }
