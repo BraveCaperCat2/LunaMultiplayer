@@ -212,11 +212,14 @@ namespace Server.System
                         msgData.Craft.CraftData = FileHandler.ReadFile(CraftFile);
                         msgData.Craft.CraftNumBytes = msgData.Craft.CraftData.Length;
 
-                        var CraftInfoData = byte[0];
+                        var CraftInfoData = Array.Empty<byte>();
                         if (FileHandler.FileExists(CraftInfoFile))
                         {
-                            CraftInfoDate = FileHandler.ReadFile(CraftInfoFile)
+                            CraftInfoData = FileHandler.ReadFile(CraftInfoFile);
                         }
+
+                        msgData.Craft.CraftInfoData = CraftInfoData;
+                        msgData.Craft.CraftInfoNumBytes = CraftInfoData.Length;
 
                         LunaLog.Debug($"Sending craft ({ByteSize.FromBytes(msgData.Craft.CraftNumBytes + msgData.Craft.CraftInfoNumBytes).KiloBytes}{ByteSize.KiloByteSymbol}): {data.CraftRequested.CraftName} to: {client.PlayerName}.");
                         MessageQueuer.SendToClient<CraftLibrarySrvMsg>(client, msgData);
