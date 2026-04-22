@@ -1,6 +1,7 @@
 ﻿using Lidgren.Network;
 using LmpCommon.Enums;
 using LmpCommon.Message.Base;
+using System;
 
 namespace LmpCommon.Message.Data.CraftLibrary
 {
