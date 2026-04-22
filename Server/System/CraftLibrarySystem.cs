@@ -161,7 +161,7 @@ namespace Server.System
 
                             if (Path.GetExtension(file) == ".loadmeta")
                             {
-                                continue
+                                continue;
                             }
 
                             var craftName = Path.GetFileNameWithoutExtension(file);
@@ -207,10 +207,10 @@ namespace Server.System
                     {
                         var msgData = ServerContext.ServerMessageFactory.CreateNewMessageData<CraftLibraryDataMsgData>();
                         msgData.Craft.CraftType = data.CraftRequested.CraftType;
-                        msgData.Craft.CraftData = FileHandler.ReadFile(CraftFile);
-                        msgData.Craft.CraftNumBytes = msgData.Craft.CraftData.Length;
                         msgData.Craft.FolderName = data.CraftRequested.FolderName;
                         msgData.Craft.CraftName = data.CraftRequested.CraftName;
+                        msgData.Craft.CraftData = FileHandler.ReadFile(CraftFile);
+                        msgData.Craft.CraftNumBytes = msgData.Craft.CraftData.Length;
 
                         var CraftInfoData = byte[0];
                         if (FileHandler.FileExists(CraftInfoFile))

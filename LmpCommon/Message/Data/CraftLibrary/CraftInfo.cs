@@ -13,11 +13,11 @@ namespace LmpCommon.Message.Data.CraftLibrary
 
         // Craft data - represents the .craft file
         public int CraftNumBytes;
-        public byte[] CraftData = new byte[0];
+        public byte[] CraftData = Array.Empty<byte>();
 
         // Craft Info data - represents the .loadmeta file
         public int CraftInfoNumBytes;
-        public byte[] CraftInfoData = new byte[0];
+        public byte[] CraftInfoData = Array.Empty<byte>();
 
         public void Serialize(NetOutgoingMessage lidgrenMsg)
         {
@@ -48,7 +48,7 @@ namespace LmpCommon.Message.Data.CraftLibrary
             CraftNumBytes = lidgrenMsg.ReadInt32();
 
             if (CraftData.Length < CraftNumBytes)
-                CraftData = new byte[NumBytes];
+                CraftData = new byte[CraftNumBytes];
 
             lidgrenMsg.ReadBytes(CraftData, 0, CraftNumBytes);
 
@@ -58,7 +58,7 @@ namespace LmpCommon.Message.Data.CraftLibrary
             CraftInfoNumBytes = lidgrenMsg.ReadInt32();
 
             if (CraftInfoData.Length < CraftInfoNumBytes)
-                CraftInfoData = new byte[NumBytes];
+                CraftInfoData = new byte[CraftInfoNumBytes];
 
             lidgrenMsg.ReadBytes(CraftInfoData, 0, CraftInfoNumBytes);
 

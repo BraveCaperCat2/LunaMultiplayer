@@ -93,7 +93,7 @@ namespace LmpClient.Systems.CraftLibrary
 
                         var CraftData = File.ReadAllBytes(file);
 
-                        var CraftInfoData = new byte[0];
+                        var CraftInfoData = Array.Empty<byte>();
 
                         if (Directory.Exists(Path.GetFileNameWithoutExtension(file) + ".loadmeta") {
                             CraftInfoData = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".loadmeta");
@@ -105,7 +105,7 @@ namespace LmpClient.Systems.CraftLibrary
                             CraftType = CraftType.Vab,
                             FolderName = SettingsSystem.CurrentSettings.PlayerName,
                             CraftData = CraftData,
-                            CraftNumBytes = CraftData.Length
+                            CraftNumBytes = CraftData.Length,
                             CraftInfoData = CraftInfoData,
                             CraftInfoNumBytes = CraftInfoData.Length
                         });
@@ -124,7 +124,7 @@ namespace LmpClient.Systems.CraftLibrary
 
                         var CraftData = File.ReadAllBytes(file);
 
-                        var CraftInfoData = new byte[0];
+                        var CraftInfoData = Array.Empty<byte>();
 
                         if (Directory.Exists(Path.GetFileNameWithoutExtension(file) + ".loadmeta") {
                             CraftInfoData = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".loadmeta");
@@ -155,10 +155,10 @@ namespace LmpClient.Systems.CraftLibrary
 
                         var CraftData = File.ReadAllBytes(file);
 
-                        var CraftInfoData = new byte[0];
+                        var CraftInfoData = Array.Empty<byte>();
 
-                        if (Directory.Exists(Path.GetFileNameWithoutExtension(file) + ".loadmeta") {
-                            CraftInfoData = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".loadmeta");
+                        if (Path.Exists(Path.ChangeExtension(file, ".loadmeta")) {
+                            CraftInfoData = File.ReadAllBytes(Path.ChangeExtension(file, ".loadmeta"));
                         }
 
                         newOwnCrafts.Add(new CraftEntry
