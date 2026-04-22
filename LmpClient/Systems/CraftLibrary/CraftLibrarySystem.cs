@@ -95,7 +95,7 @@ namespace LmpClient.Systems.CraftLibrary
 
                         var CraftInfoData = Array.Empty<byte>();
 
-                        if (Directory.Exists(Path.GetFileNameWithoutExtension(file) + ".loadmeta") {
+                        if (File.Exists(Path.GetFileNameWithoutExtension(file) + ".loadmeta") {
                             CraftInfoData = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".loadmeta");
                         }
 
@@ -126,7 +126,7 @@ namespace LmpClient.Systems.CraftLibrary
 
                         var CraftInfoData = Array.Empty<byte>();
 
-                        if (Directory.Exists(Path.GetFileNameWithoutExtension(file) + ".loadmeta") {
+                        if (File.Exists(Path.GetFileNameWithoutExtension(file) + ".loadmeta") {
                             CraftInfoData = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".loadmeta");
                         }
 
@@ -157,7 +157,7 @@ namespace LmpClient.Systems.CraftLibrary
 
                         var CraftInfoData = Array.Empty<byte>();
 
-                        if (Path.Exists(Path.ChangeExtension(file, ".loadmeta")) {
+                        if (File.Exists(Path.ChangeExtension(file, ".loadmeta"))) {
                             CraftInfoData = File.ReadAllBytes(Path.ChangeExtension(file, ".loadmeta"));
                         }
 
