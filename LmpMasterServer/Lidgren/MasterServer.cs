@@ -83,7 +83,7 @@ namespace LmpMasterServer.Lidgren
             // Future versions (>0.29.1)
             "0.29.2",
             "0.30.0"
-        }
+        };
 
         public static async Task StartAsync()
         {
