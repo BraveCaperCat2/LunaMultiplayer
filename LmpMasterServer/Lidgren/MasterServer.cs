@@ -34,6 +34,57 @@ namespace LmpMasterServer.Lidgren
             new TimeoutConcurrentDictionary<IPAddress, object>(1000);
         private static MasterServerMessageFactory MasterServerMessageFactory { get; } = new MasterServerMessageFactory();
 
+        // Only servers that report one of these versions will be added to the list
+        // This can be used to drop server-list support for older versions and prevent servers for other people's forks of LMP from appearing on the actual LMP server list.
+        // Currently, it's just all the versions that are available on github, plus 0.29.2 and 0.30.0, regardless of compattibility or support for those versions.
+        public static readonly string[] ValidServerVersions = {
+            // Old versions (<0.29.1)
+            "0.0.5",
+            "0.0.6",
+            "0.0.7",
+            "0.0.8",
+            "0.0.9",
+            "0.0.10",
+            "0.1.11",
+            "0.1.12",
+            "0.1.13",
+            "0.2.16",
+            "0.2.17",
+            "0.2.22",
+            "0.3.28",
+            "0.4.33",
+            "0.5.36",
+            "0.6.37",
+            "0.7.41",
+            "0.8.42",
+            "0.9.44",
+            "0.10.46",
+            "0.11.47",
+            "0.12.49",
+            "0.13.50",
+            "0.15.0",
+            "0.16.0",
+            "0.17.0",
+            "0.18.0",
+            "0.19.0",
+            "0.20.0",
+            "0.20.1",
+            "0.20.2",
+            "0.21.0",
+            "0.22.0",
+            "0.24.0",
+            "0.25.0",
+            "0.26.0",
+            "0.27.0",
+            "0.28.0",
+            "0.29.0",
+            // Current version
+            "0.29.1",
+            // Future versions (>0.29.1)
+            "0.29.2",
+            "0.30.0"
+        }
+
         public static async Task StartAsync()
         {
             var config = new NetPeerConfiguration("masterserver")
@@ -254,6 +305,12 @@ namespace LmpMasterServer.Lidgren
         private static void RegisterServer(IMessageBase message, NetIncomingMessage netMsg)
         {
             var msgData = (MsRegisterServerMsgData)message.Data;
+
+            if (!ValidServerVersions.Contains(msgData.ServerVersion))
+            {
+                LunaLog.Debug($"Server registration rejected for server at {netMsg.SenderEndPoint} with provided version {msgData.ServerVersion}. (not in ValidServerVersions list)");
+                return;
+            }
 
             if (ServerDictionary.TryGetValue(msgData.Id, out var existing))
             {
