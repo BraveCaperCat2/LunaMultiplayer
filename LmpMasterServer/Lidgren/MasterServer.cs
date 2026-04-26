@@ -38,7 +38,7 @@ namespace LmpMasterServer.Lidgren
         /// Checks if the server version provided is less than or equal to the version of the master server.
         /// Later versions will be invalid (false return value) unless specified as compattible in CrossCompatibleVersionLines.
         /// </summary>
-        public static bool IsValidServerVersion(ServerVersion) => (ServerVersion <= LmpVersioning.CurrentVersion) || LmpVersioning.IsCompatible(ServerVersion);
+        public static bool IsValidServerVersion(Version ServerVersion) => (ServerVersion <= LmpVersioning.CurrentVersion) || LmpVersioning.IsCompatible(ServerVersion);
 
         public static async Task StartAsync()
         {
@@ -261,7 +261,7 @@ namespace LmpMasterServer.Lidgren
         {
             var msgData = (MsRegisterServerMsgData)message.Data;
 
-            if (!IsValidServerVersion(msgData.ServerVersion)
+            if (!IsValidServerVersion(msgData.ServerVersion))
             {
                 LunaLog.Debug($"Server registration rejected for server at {netMsg.SenderEndPoint} with provided version {msgData.ServerVersion}. (not a valid server version)");
                 return;
