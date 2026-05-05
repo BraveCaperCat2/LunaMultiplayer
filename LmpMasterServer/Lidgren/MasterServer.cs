@@ -260,10 +260,9 @@ namespace LmpMasterServer.Lidgren
         private static void RegisterServer(IMessageBase message, NetIncomingMessage netMsg)
         {
             var msgData = (MsRegisterServerMsgData)message.Data;
-
-            if (!IsValidServerVersion(Version.Parse(msgData.ServerVersion)))
+            if (!Version.TryParse(msgData.ServerVersion, out var serverVersion) || !IsValidServerVersion(serverVersion))
             {
-                LunaLog.Debug($"Server registration rejected for server at {netMsg.SenderEndPoint} with provided version {msgData.ServerVersion}. (not a valid server version)");
+                LunaLog.Debug($"Server registration rejected for server at {netMsg.SenderEndPoint} with provided version \"{msgData.ServerVersion}\". (not a valid server version)");
                 return;
             }
 
