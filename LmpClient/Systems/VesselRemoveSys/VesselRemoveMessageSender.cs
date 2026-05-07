@@ -41,7 +41,7 @@ namespace LmpClient.Systems.VesselRemoveSys
             msgData.AddToKillList = keepVesselInRemoveList;
 
             // Log the stack trace for debugging purposes
-            StackTrace t = new();
+            StackTrace t = new StackTrace();
             LunaLog.LogError($"Debug stack trace for vessel removal ({vesselId}):");
             LunaLog.LogError(t.ToString());
 
